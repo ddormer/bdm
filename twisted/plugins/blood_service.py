@@ -13,7 +13,8 @@ from bdm.resource import RootResource
 
 class Options(usage.Options):
     optParameters = [
-        ['dbdir', 'd', 'blood.axiom', 'Blood Donation Machine database directory'],
+        ['steamkey', 'k', None, 'Steam developer API key.'],
+        ['dbdir', 'd', 'blood.axiom', 'Database directory'],
         ['port', 'p', 'tcp:8080', 'Service strport description']]
 
 
@@ -26,7 +27,9 @@ class BloodDonationMachineServiceMaker(object):
 
     def makeService(self, options):
         site = Site(
-            RootResource(store=Store(options['dbdir'])))
+            RootResource(
+                store=Store(options['dbdir']),
+                steamKey=options['steamkey']))
         return strports.service(options['port'], site)
 
 serviceMaker = BloodDonationMachineServiceMaker()
