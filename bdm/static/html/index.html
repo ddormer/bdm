@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="static/css/index.css" type="text/css"/>
+        <script src="static/javascript/react/react.js"></script>
+        <script src="static/javascript/react/JSXTransformer.js"></script>
+        <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    </head>
+    <body>
+        <div id="title-bar">
+            MVP Donation
+        </div>
+
+        <div id="container">
+            <div id="paypal-container">
+                <div id="paypal-subscribe">
+                </div>
+                <div id="paypal-donate">
+                </div>
+            </div>
+
+            <div id="donation-title">
+                Statistics
+            </div>
+            <div id="donation-container">
+            </div>
+        </div>
+
+
+        <script type="text/jsx">
+            /** @jsx React.DOM */
+
+            var DonationList = React.createClass({
+                render: function() {
+                    var donationNodes = this.props.data.map(function (donation) {
+                        return <Donation key={donation.date} donator={donation.personaname} amount={donation.amount} avatar={donation.avatar}></Donation>;
+                    });
+
+                    return (
+                        <div className="donation-list">
+                            <div className="donation-list-title">
+                            {this.props.title}
+                            </div>
+                            {donationNodes}
+                        </div>
+                    );
+                }
+            });
+
+            var Donation = React.createClass({
+                render: function() {
+                    return (
+                        <div className="donation">
+                            <img className="steam-avatar" src={this.props.avatar}/>
+                            <div className="donator-name">
+                                {this.props.donator}
+                            </div>
+                            <div className="donation-amount">
+                                ${this.props.amount}
+                            </div>
+                        </div>
+                    );
+                }
+            });
+
+            var DonationBox = React.createClass({
+                getInitialState: function() {
+                    return {data: []};
+                },
+                loadDonationsFromServer: function() {
+                    $.ajax({
+                        url: this.props.url,
+                        dataType: 'json',
+                        success: function(data) {
+                            this.setState({data: data.result});
+                        }.bind(this),
+                        error: function(xhr, status, err) {
+                            console.error(this.props.url, status, xhr);
+                        }.bind(this)
+                    });
+                },
+                componentWillMount: function() {
+                    this.loadDonationsFromServer();
+                    setInterval(this.loadDonationsFromServer, this.props.pollInterval);
+                },
+
+                render: function () {
+                    return (
+                    <DonationList title={this.props.title} data={this.state.data} />
+                    );
+                },
+
+            });
+
+            var DonationContainer = React.createClass({
+                render: function () {
+                    return (
+                    <div>
+                    <DonationBox title="Top Total" url="api/recent" pollInterval={20000}/>
+                    <DonationBox title="Recent" url="api/recent" pollInterval={20000}/>
+                    </div>
+                    )
+                }
+            });
+
+            React.renderComponent(
+                <DonationContainer/>,
+                document.getElementById('donation-container')
+            );
+        </script>
+    </body>
+</html>

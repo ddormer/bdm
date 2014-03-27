@@ -1,0 +1,149 @@
+@import url(http://fonts.googleapis.com/css?family=Press+Start+2P);
+
+@viewport {
+    width: device-width;
+    zoom: 1;
+}
+
+#title-bar {
+    margin-top: 2%;
+    margin-bottom: 4%;
+    max-width: 100%;
+    background-color: yellow;
+    text-align: center;
+    font-size: 4vmax;
+    font-family: 'Press Start 2P', cursive;
+    text-transform: uppercase;
+}
+
+#container {
+    width: 100%;
+    background-color: grey;
+}
+
+#donation-title {
+    display: none;
+    width: 100%;
+    margin-top: 4%;
+    text-align: center;
+    font-size: 4.5vmax;
+    background-color: green;
+}
+
+#donation-container {
+    float: left;
+    width: 280px;
+    margin-left: 10px;
+    height: 200px;
+    margin-right: 20px;
+}
+
+.donation-list-title {
+    font-size: 26px;
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+.donation-list {
+    max-height: 350px;
+    height: 185px;
+    width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid black;
+    background-color: #383838;
+}
+
+.donation {
+    width: 100%;
+    background-color: #2B2B2B;
+    height: 33px;
+    margin-bottom: 2px;
+}
+
+.steam-avatar {
+    float: left;
+    border: 1px solid;
+}
+
+.donator-name, .donation-amount {
+    padding-top: 4px;
+}
+
+.donator-name {
+    float:left;
+    font-size: 20px;
+    background-color: red;
+    margin-left: 10px;
+}
+
+.donation-amount {
+    float: right;
+    font-size: 18px;
+    color: #12E612;
+    margin-right: 10px;
+}
+
+#paypal-container {
+    float: right;
+    max-width: 900px;
+    width: 70%;
+    min-width: 380px;
+    height: 400px;
+    background-color: black;
+    margin-right: 4%;
+}
+
+#paypal-subscribe {
+    float: left;
+    width: 50%;
+    height: 100%;
+    background-color: blue;
+}
+
+#paypal-donate {
+    float: right;
+    width: 50%;
+    height: 100%;
+    background-color: red;
+}
+
+
+@media all and (max-width: 1220px) {
+    #paypal-container {
+        float: none;
+        margin: 0 auto;
+    }
+    #donation-container {
+        float: none;
+        width: 100%;
+        margin-top: 25px;
+    }
+    .donation-list {
+        float: left;
+        margin-right: 2%;
+    }
+
+    #donation-title {
+        display: block;
+    }
+}
+
+/* Paypal options sit underneath each other when the viewport becomes too small
+ * to have them float next to each other. max-width: paypal-container+divider*/
+@media all and (max-width: 920px) {
+    #paypal-horizontal-divider {
+        display: block;
+    }
+    #paypal-vertical-divider {
+        display: none;
+    }
+    #paypal-container {
+        height: 800px;
+    }
+    #paypal-donate, #paypal-subscribe {
+        height: 50%;
+        float: none;
+        width: auto;
+    }
+}
