@@ -41,8 +41,9 @@ class Donation(Item):
         donator.powerUp(self, IDonation)
 
 
-    def toDict(self):
-        return {
-            'donator': getattr(getattr(self, 'donator', None), 'steamID', None),
-            'amount': str(self.amount),
-            'date': self.date.asPOSIXTimestamp()}
+
+def donationToDict(donation):
+    return {
+        'donator': getattr(getattr(donation, 'donator', None), 'steamID', None),
+        'amount': str(donation.amount),
+        'date': donation.date.asPOSIXTimestamp()}

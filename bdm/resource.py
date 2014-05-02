@@ -8,7 +8,7 @@ from twisted.web.server import NOT_DONE_YET
 
 from axiom.errors import ItemNotFound
 
-from bdm.main import Donation, Donator
+from bdm.main import Donation, Donator, donationToDict
 from bdm.error import BloodyError, PaypalError
 from bdm.constants import CODE
 
@@ -216,7 +216,7 @@ class DonationAPI(Resource):
 
         donations = []
         for donation in donator.donations:
-            donations.append(donation.toDict())
+            donations.append(donationToDict(donation))
         return donations
 
 
@@ -254,7 +254,20 @@ class DonationAPI(Resource):
             try:
                 limit = request.postpath[1]
             except IndexError:
-                limit = 10
+                limit = 5
             return self.recent(limit)
 
+        if name == u'top':
+            try:
+                limit = request.postpath[1]
+            except IndexError:
+                limit = 5
+            return self.getTop(limit)
+
         return NoResource('')
+
+
+    def getTop(self, limit):
+        """
+        """
+
