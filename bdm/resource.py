@@ -276,15 +276,11 @@ class DonationAPI(Resource):
 
     @jsonResult
     def render_POST(self, request):
-        print 'Check path'
         if not request.postpath:
             return "maybe sam dox"
 
-        print 'Get name'
         name = request.postpath[0]
-        print 'Get content'
         content = json.loads(request.content.read())
-        print 'Got content'
 
         if not content:
             return 'No JSON provided'
