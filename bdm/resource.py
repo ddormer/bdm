@@ -296,10 +296,10 @@ class DonationAPI(Resource):
         """
 
 
-    def serverStats(self, servers):
+    def serverStats(self, servers, querier=ServerQuerier):
         def getInfo(server):
             def _tx():
-                q = ServerQuerier(server)
+                q = querier(server)
                 info = q.get_info()
                 return {
                     'server_name': info['server_name'],
