@@ -1,48 +1,71 @@
-@import url(http://fonts.googleapis.com/css?family=Press+Start+2P);
-
-@viewport {
-    width: device-width;
-    zoom: 1;
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700,900);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
+@import url(http://fonts.googleapis.com/css?family=Abel);
+p {
+  font-size: 12pt;
+  line-height: 1.25;
+  font-family: "Roboto Condensed",Helvetica,sans-serif;
+  font-weight: 300;
+  line-height: 1.3em;
+  font-size: 20px;
 }
 
-#title-bar {
-    margin-top: 2%;
-    margin-bottom: 4%;
-    max-width: 100%;
+#hero-container {
+    height: 17em;
+    max-height: 300px;
+    margin-bottom: 30px;
+    background-color: lightblue;
+}
+
+#hero-title {
+    color: black;
+    margin-top: 0.8em;
+    font-size: 5em;
+    text-align: center;
+    font-family: 'Abel', sans-serif;
+}
+
+#paypal-container {
+    height: 350px;
+}
+
+#donation-text {
+    padding-top: 40px;
+}
+
+/*change to ID */
+form > fieldset > legend {
+    text-align: center;
+}
+
+#divider {
+    position: relative;
+    margin-top: 120px;
+    left: 50%;
+    width: 0px;
+    border-left:1px solid #E6E6E6;
+    /*border-right: 1px solid black;*/
+    height: 100px;
+}
+
+#paypal-title {
     background-color: yellow;
-    text-align: center;
-    font-size: 4vmax;
-    font-family: 'Press Start 2P', cursive;
-    text-transform: uppercase;
 }
 
-#container {
-    width: 100%;
-    background-color: grey;
-}
-
-#donation-title {
-    display: none;
-    width: 100%;
-    margin-top: 4%;
-    text-align: center;
-    font-size: 4.5vmax;
-    background-color: green;
+#donation-amount {
+    background-color: red;
 }
 
 #donation-container {
-    float: left;
     width: 280px;
-    margin-left: 10px;
     height: 200px;
-    margin-right: 20px;
+    margin-top: 30px;
 }
 
 .donation-list-title {
     font-size: 26px;
     text-align: center;
-    background-color: black;
-    color: white;
+    color: black;
 }
 
 .donation-list {
@@ -50,15 +73,32 @@
     height: 185px;
     width: 100%;
     margin-bottom: 20px;
-    border: 1px solid black;
-    background-color: #383838;
+    /*border: 1px solid black; */
+    /*background-color: #383838; */
 }
 
 .donation {
     width: 100%;
-    background-color: #2B2B2B;
-    height: 33px;
-    margin-bottom: 2px;
+    /*background-color: #2B2B2B;*/
+    border-bottom: 1px solid black;
+    padding-bottom: 1px;
+    margin-bottom: 1px;
+    height: 34px;
+}
+
+.donation-list > .donation:nth-child(2n+2) {
+    background-color: #EEEEEE;
+}
+
+.donation-list > .donation:last-child {
+    border-bottom: 0px;
+}
+
+.donation-list-icon {
+    float: left;
+    font-size: 15px;
+    margin-top: 8px;
+    margin-left: 5px;
 }
 
 .steam-avatar {
@@ -73,7 +113,6 @@
 .donator-name {
     float:left;
     font-size: 20px;
-    background-color: red;
     margin-left: 10px;
 }
 
@@ -84,66 +123,67 @@
     margin-right: 10px;
 }
 
-#paypal-container {
-    float: right;
-    max-width: 900px;
-    width: 70%;
-    min-width: 380px;
-    height: 400px;
-    background-color: black;
-    margin-right: 4%;
+
+#server-status-container {
+    margin-top: 30px;
 }
 
-#paypal-subscribe {
-    float: left;
-    width: 50%;
-    height: 100%;
-    background-color: blue;
-}
-
-#paypal-donate {
-    float: right;
-    width: 50%;
-    height: 100%;
+.server-down {
     background-color: red;
 }
 
-
-@media all and (max-width: 1220px) {
-    #paypal-container {
-        float: none;
-        margin: 0 auto;
-    }
-    #donation-container {
-        float: none;
-        width: 100%;
-        margin-top: 25px;
-    }
-    .donation-list {
-        float: left;
-        margin-right: 2%;
-    }
-
-    #donation-title {
-        display: block;
-    }
+.server-up {
+    background-color: #58FA58;
 }
 
-/* Paypal options sit underneath each other when the viewport becomes too small
- * to have them float next to each other. max-width: paypal-container+divider*/
-@media all and (max-width: 920px) {
-    #paypal-horizontal-divider {
-        display: block;
-    }
-    #paypal-vertical-divider {
-        display: none;
-    }
-    #paypal-container {
-        height: 800px;
-    }
-    #paypal-donate, #paypal-subscribe {
-        height: 50%;
-        float: none;
-        width: auto;
-    }
+.server-status {
+    height: 50px;
+    width: 340px;
+    margin-bottom: 5px;
+    -webkit-transform-style: preserve-3d;
 }
+
+.server-name {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    float:left;
+    width: 220px;
+    padding-left: 10px;
+}
+
+.server-players {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    float: right;
+    padding-right: 3%;
+}
+
+.server-location {
+    float: right;
+    width: 50px;
+}
+
+
+
+
+
+    .or-spacer {
+        margin-top:86px;
+        width:100%;
+        position:relative;
+    }
+    .or-spacer .mask {
+        overflow:hidden;
+        height:20px;
+    }
+    .or-spacer .mask:after {
+        content:'';
+        display:block;
+        margin:20px auto 0;
+        width:100%;
+        height:25px;
+        border-radius:125px / 12px;
+        box-shadow:0 0 8px black;
+    }

@@ -5,30 +5,157 @@
         <script src="static/javascript/react/react.js"></script>
         <script src="static/javascript/react/JSXTransformer.js"></script>
         <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.4.2/pure-min.css">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     </head>
     <body>
-        <div id="title-bar">
-            MVP Donation
+        <div id="hero-container" class="pure-g-r">
+            <div id="hero-title" class="pure-u-1">
+                The Tempus Network
+            </div>
+
+
+            <div class="or-spacer">
+              <div class="mask"></div>
+            </div>
+
         </div>
 
-        <div id="container">
-            <div id="paypal-container">
-                <div id="paypal-subscribe">
+        <div id="container" class="pure-g-r">
+            <div class="pure-u-7-24">
+                <div class="pure-g">
+                    <div class="pure-u-1-5">
+                    </div>
+                    <div class="pure-u-3-5">
+                        <div id="donation-container" >
+                        </div>
+                    </div>
                 </div>
-                <div id="paypal-donate">
+            </div>
+            <div id="paypal-container" class="pure-u-10-24">
+                <div class="pure-g">
+                    <div id="donation-text" class="pure-u-11-24">
+                            <p>The Tempus Network provides TF2 Jump and CS:S Surf servers.</p>
+                            <p>Donations help us pay for server bandwidth, hardware and maintenance; allowing the network to expand and plugin development to continue.</p>
+                            <p>Donator benefits will be announced in the near future.</p>
+                    </div>
+                    <div class="pure-u-1-24">
+                        <div id="divider">
+                        </div>
+                    </div>
+
+                    <form class="pure-form pure-form-stacked pure-u-11-24" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                        <fieldset>
+                            <legend>Donate with PayPal!</legend>
+                            <label for="paypal-amount">Amount (USD)<label>
+                            <input id="paypal-amount" name="amount" placeholder="50">
+
+                            <label for="option-one" class="pure-radio">
+                                <input id="option-one" type="radio" name="optionsRadios" value="option1" checked>
+                                Once-off Donation
+                            </label>
+
+                            <label for="option-two" class="pure-radio">
+                                <input id="option-two" type="radio" name="optionsRadios" value="option2" checked>
+                                Monthly Subscription
+                            </label>
+                        </fieldset>
+
+                        <fieldset>
+                            SteamID (<a href="http://steamidfinder.com/">How do I find my steamID?</a>)
+                            <input name="steamid" placeholder="STEAM_0:0:14265062">
+                        </fieldset>
+
+                        <label for="agree" class="pure-checkbox">
+                            <input id="agree" type="checkbox"> Show donation as "Anonymous"
+                        </label>
+
+                        <fieldset>
+                            <input type="button" name="submit" alt="PayPal - The safer, easier way to pay online!" class="pure-button pure-button-primary" value="Donate">
+                        </fieldset>
+
+                        <input type="hidden" name="item_name" value="Tempus Network Donation">
+                        <input type="hidden" name="cmd" value="_donations">
+                        <input type="hidden" name="business" value="WABA95A5Z3H4W">
+                    </form>
                 </div>
             </div>
 
-            <div id="donation-title">
-                Statistics
-            </div>
-            <div id="donation-container">
+
+            <div class="pure-u-7-24">
+                <div class="pure-g">
+                    <div class="pure-u-1-5">
+                    </div>
+                    <div id="server-status-container" class="pure-u-3-5">
+                        <div class="server-status server-up">
+                            <span class="server-name">AusSurf Skill US [66Tick - Tricks - FastDL]</span>
+                            <img class="server-location" src="http://placehold.it/50x50"></img>
+                            <span class="server-players">10/30</span>
+                        </div>
+                        <div class="server-status server-down">
+                            <span class="server-name">server 2, Down.</span>
+                            <img class="server-location" src="http://placehold.it/50x50"></img>
+                            <span class="server-players">10/30</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
 
         <script type="text/jsx">
             /** @jsx React.DOM */
+
+
+
+            var Server = React.createClass({
+                render: function() {
+                    return (
+                    <div className="server-status server-up">
+                        <span className="server-name">{this.props.server.server_name}</span>
+                        <img className="server-location" src="http://placehold.it/50x50"></img>
+                        <span className="server-players">{this.props.server.player_count}/{this.props.server.max_players}</span>
+                    </div>
+                    )
+                },
+
+            });
+
+            var ServerList = React.createClass({
+                render: function() {
+                    var serverNodes = this.state.data.map(function (server) {
+                        return <Server server={server}></Server>
+                    });
+                    return (
+                    <div>
+                        {serverNodes}
+                    </div>);
+                },
+
+                getInitialState: function() {
+                    return {data: []};
+                },
+                loadDonationsFromServer: function() {
+                    $.ajax({
+                        data: JSON.stringify(this.props.servers),
+                        type: 'POST',
+                        url: this.props.url,
+                        dataType: 'json',
+                        success: function(data) {
+                            this.setState({data: data.result});
+                        }.bind(this),
+                        error: function(xhr, status, err) {
+                            console.error(this.props.url, status, xhr);
+                        }.bind(this)
+                    });
+                    console.log(this.props.servers);
+                },
+                componentWillMount: function() {
+                    this.loadDonationsFromServer();
+                    setInterval(this.loadDonationsFromServer, this.props.pollInterval);
+                },
+
+            });
 
             var DonationList = React.createClass({
                 render: function() {
@@ -39,6 +166,7 @@
                     return (
                         <div className="donation-list">
                             <div className="donation-list-title">
+                            <span className="fa fa-trophy donation-list-icon"></span>
                             {this.props.title}
                             </div>
                             {donationNodes}
@@ -97,7 +225,20 @@
                     return (
                     <div>
                     <DonationBox title="Top Total" url="api/recent" pollInterval={20000}/>
-                    <DonationBox title="Recent" url="api/recent" pollInterval={20000}/>
+                    <DonationBox title="Latest" url="api/recent" pollInterval={20000}/>
+                    </div>
+                    )
+                }
+            });
+
+            var servers = [["41.86.100.101", 27015]];
+
+
+            var ServerStatus = React.createClass({
+                render: function () {
+                    return (
+                    <div>
+                    <ServerList servers={servers} url="api/servers" pollInterval={20000}/>
                     </div>
                     )
                 }
@@ -106,6 +247,10 @@
             React.renderComponent(
                 <DonationContainer/>,
                 document.getElementById('donation-container')
+            );
+            React.renderComponent(
+                <ServerStatus/>,
+                document.getElementById('server-status-container')
             );
         </script>
     </body>
