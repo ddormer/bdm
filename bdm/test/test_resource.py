@@ -15,6 +15,10 @@ class TestDonationAPI(TestCase):
         self.api = DonationAPI(self.store, 'nothing')
 
 
+    def tearDown(self):
+        self.api.threadPool.stop()
+
+
     def test_serverStats(self):
         def _cb(result):
             self.assertEqual([{
