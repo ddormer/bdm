@@ -16,7 +16,7 @@ class TestDonationAPI(TestCase):
 
 
     def tearDown(self):
-        self.api.threadPool.stop()
+        self.api.threadPool.stope()
 
 
     def test_serverStats(self):
@@ -28,9 +28,7 @@ class TestDonationAPI(TestCase):
                 'max_players': 16
             }], result)
 
-        servers = [
-            ['1.1.1.1', 27015]
-        ]
+        servers = [['1.1.1.1', 27015]]
 
         return self.api.serverStats(servers, querier=MockServerQuerier).addCallback(_cb)
 
@@ -38,9 +36,7 @@ class TestDonationAPI(TestCase):
 
 class MockServerQuerier(object):
     def __init__(self, address, timeout=5.0):
-        self.host = address[0]
-        self.port = address[1]
-        self.timeout = timeout
+        pass
 
 
     def get_info(self):
