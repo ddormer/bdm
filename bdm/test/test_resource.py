@@ -16,7 +16,7 @@ class TestDonationAPI(TestCase):
 
 
     def tearDown(self):
-        self.api.threadPool.stope()
+        self.api.threadPool.stop()
 
 
     def test_serverStats(self):
