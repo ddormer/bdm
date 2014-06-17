@@ -1,6 +1,9 @@
 import json
 
-from twisted.internet.defer import maybeDeferred
+from twisted.internet.defer import maybeDeferred, gatherResults
+from twisted.internet import reactor
+from twisted.internet.threads import deferToThreadPool
+from twisted.python.threadpool import ThreadPool
 from twisted.web import http
 from twisted.web.client import getPage
 from twisted.web.resource import Resource, NoResource
@@ -11,6 +14,8 @@ from axiom.errors import ItemNotFound
 from bdm.main import Donation, Donator, donationToDict
 from bdm.error import BloodyError, PaypalError
 from bdm.constants import CODE
+
+from valve.source.a2s import ServerQuerier
 
 
 def _writeJSONResponse(result, request, code=CODE.SUCCESS, status=http.OK):
@@ -169,6 +174,8 @@ class DonationAPI(Resource):
     def __init__(self, store, steamKey):
         self.store = store
         self.steamKey = steamKey
+        self.threadPool = ThreadPool()
+        self.threadPool.start()
         Resource.__init__(self)
 
 
@@ -267,7 +274,45 @@ class DonationAPI(Resource):
         return NoResource('')
 
 
+    @jsonResult
+    def render_POST(self, request):
+        if not request.postpath:
+            return "maybe sam dox"
+
+        name = request.postpath[0]
+        content = json.loads(request.content.read())
+
+        if not content:
+            return 'No JSON provided'
+
+        if name == u'servers':
+            return self.serverStats(content)
+
+        return NoResource('')
+
+
     def getTop(self, limit):
         """
         """
+
+
+    def serverStats(self, servers, querier=ServerQuerier):
+        def getInfo(server):
+            def _tx():
+                q = querier(server)
+                info = q.get_info()
+                return {
+                    'server_name': info['server_name'],
+                    'map': info['map'],
+                    'player_count': info['player_count'],
+                    'max_players': info['max_players']
+                }
+
+            return deferToThreadPool(reactor, self.threadPool, _tx)
+
+        deferreds = []
+        for server in servers:
+            deferreds.append(getInfo(server))
+        d = gatherResults(deferreds, consumeErrors=True)
+        return d
 
