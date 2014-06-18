@@ -304,10 +304,12 @@ class DonationAPI(Resource):
                             'map': info['map'],
                             'player_count': info['player_count'],
                             'max_players': info['max_players'],
-                            'online': True}
+                            'online': True,
+                            'location': server[2]}
                 except NoResponseError:
                     return {'server_name': server[0],
-                            'online': False}
+                            'online': False,
+                            'location': server[2]}
 
             return deferToThreadPool(reactor, self.threadPool, _tx)
 
