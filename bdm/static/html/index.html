@@ -110,13 +110,19 @@
 
             var Server = React.createClass({
                 render: function() {
-                    return (
-                    <div className="server-status server-up">
-                        <span className="server-name">{this.props.server.server_name}</span>
-                        <img className="server-location" src="http://placehold.it/50x50"></img>
-                        <span className="server-players">{this.props.server.player_count}/{this.props.server.max_players}</span>
-                    </div>
-                    )
+                    if (this.props.server.online) {
+                        return (
+                        <div className="server-status server-up">
+                            <span className="server-name">{this.props.server.server_name}</span>
+                            <img className="server-location" src="http://placehold.it/50x50"></img>
+                            <span className="server-players">{this.props.server.player_count}/{this.props.server.max_players}</span>
+                        </div>)
+                    } else {
+                        return (
+                        <div className="server-status server-down">
+                            <span className="server-name">{this.props.server.server_name}</span>
+                        </div>)
+                    }
                 },
 
             });

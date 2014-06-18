@@ -14,7 +14,7 @@ from bdm.main import Donation, Donator, donationToDict
 from bdm.error import BloodyError, PaypalError
 from bdm.constants import CODE
 
-from valve.source.a2s import ServerQuerier
+from valve.source.a2s import ServerQuerier, NoResponseError
 
 
 def _writeJSONResponse(result, request, code=CODE.SUCCESS, status=http.OK):
@@ -298,13 +298,16 @@ class DonationAPI(Resource):
         def getInfo(server):
             def _tx():
                 q = querier(server)
-                info = q.get_info()
-                return {
-                    'server_name': info['server_name'],
-                    'map': info['map'],
-                    'player_count': info['player_count'],
-                    'max_players': info['max_players']
-                }
+                try:
+                    info = q.get_info()
+                    return {'server_name': info['server_name'],
+                            'map': info['map'],
+                            'player_count': info['player_count'],
+                            'max_players': info['max_players'],
+                            'online': True}
+                except NoResponseError:
+                    return {'server_name': server[0],
+                            'online': False}
 
             return deferToThreadPool(reactor, self.threadPool, _tx)
 
@@ -313,4 +316,3 @@ class DonationAPI(Resource):
             deferreds.append(getInfo(server))
         d = gatherResults(deferreds, consumeErrors=True)
         return d
-
