@@ -148,7 +148,7 @@ form > fieldset > legend {
     top: 50%;
     transform: translateY(-50%);
     float:left;
-    width: 220px;
+    width: 200px;
     padding-left: 10px;
 }
 
@@ -162,28 +162,26 @@ form > fieldset > legend {
 
 .server-location {
     float: right;
-    width: 50px;
+    width: 75px;
 }
 
 
 
-
-
-    .or-spacer {
-        margin-top:86px;
-        width:100%;
-        position:relative;
-    }
-    .or-spacer .mask {
-        overflow:hidden;
-        height:20px;
-    }
-    .or-spacer .mask:after {
-        content:'';
-        display:block;
-        margin:20px auto 0;
-        width:100%;
-        height:25px;
-        border-radius:125px / 12px;
-        box-shadow:0 0 8px black;
-    }
+.or-spacer {
+    margin-top:86px;
+    width:100%;
+    position:relative;
+}
+.or-spacer .mask {
+    overflow:hidden;
+    height:20px;
+}
+.or-spacer .mask:after {
+    content:'';
+    display:block;
+    margin:20px auto 0;
+    width:100%;
+    height:25px;
+    border-radius:125px / 12px;
+    box-shadow:0 0 8px black;
+}

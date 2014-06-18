@@ -110,11 +110,13 @@
 
             var Server = React.createClass({
                 render: function() {
+                    var flag = "static/images/flags/"+this.props.server.location+".png";
+
                     if (this.props.server.online) {
                         return (
                         <div className="server-status server-up">
                             <span className="server-name">{this.props.server.server_name}</span>
-                            <img className="server-location" src="http://placehold.it/50x50"></img>
+                            <img className="server-location" src={flag}></img>
                             <span className="server-players">{this.props.server.player_count}/{this.props.server.max_players}</span>
                         </div>)
                     } else {
@@ -237,7 +239,7 @@
                 }
             });
 
-            var servers = [["41.86.100.101", 27015]];
+            var servers = [["41.86.100.101", 27015, "ZA"]];
 
 
             var ServerStatus = React.createClass({

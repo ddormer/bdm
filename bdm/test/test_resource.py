@@ -33,10 +33,11 @@ class TestDonationAPI(TestCase):
                          'map': 'testmap',
                          'player_count': 8,
                          'max_players': 16,
-                         'online': True}]
+                         'online': True,
+                         'location': 'ZA'}]
             self.assertEqual(expected, result)
 
-        servers = [['1.1.1.1', 27015]]
+        servers = [['1.1.1.1', 27015, "ZA"]]
         return self.api.serverStats(servers, querier=MockServerQuerier).addCallback(_cb)
 
 
@@ -46,10 +47,10 @@ class TestDonationAPI(TestCase):
         status is set to C{False}
         """
         def _cb(result):
-            expected = [{'server_name': '1.1.1.2', 'online': False}]
+            expected = [{'server_name': '1.1.1.2', 'online': False, 'location':'ZA'}]
             self.assertEqual(expected, result)
 
-        servers = [['1.1.1.2', 27015]]
+        servers = [['1.1.1.2', 27015, "ZA"]]
         return self.api.serverStats(servers, querier=MockServerQuerier).addCallback(_cb)
 
 
