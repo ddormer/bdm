@@ -14,6 +14,7 @@ class Donator(Item):
     implements(IDonator)
 
     steamID = text(allowNone=True, default=u'Anonymous')
+    totalAmount = point2decimal(allowNone=False, default=Decimal('0'))
 
     @property
     def donations(self):
@@ -25,7 +26,16 @@ class Donator(Item):
 
 
     def addDonation(self, amount):
-        Donation(store=self.store, amount=amount).installOn(self)
+        donation = Donation(store=self.store, amount=amount)
+        donation.installOn(self)
+        return donation
+
+
+    def calculateTotal(self):
+        """
+        Calls L{getDonationAmount} and sets L{totalAmount} to the result.
+        """
+        self.totalAmount = self.getDonationAmount()
 
 
 
@@ -39,6 +49,15 @@ class Donation(Item):
     def installOn(self, donator):
         self.donator = donator
         donator.powerUp(self, IDonation)
+        self.donator.calculateTotal()
+
+
+    def deleteFromStore(self, deleteObject=True):
+        """
+        Recalculate total donation amount when donation is deleted
+        """
+        super(Donation, self).deleteFromStore(deleteObject=deleteObject)
+        self.donator.calculateTotal()
 
 
 
@@ -47,3 +66,9 @@ def donationToDict(donation):
         'donator': getattr(getattr(donation, 'donator', None), 'steamID', None),
         'amount': str(donation.amount),
         'date': donation.date.asPOSIXTimestamp()}
+
+
+def donatorToDict(donator):
+    return {
+        'steamID': donator.steamID,
+        'amount': str(donator.totalAmount)}

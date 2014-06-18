@@ -54,6 +54,26 @@ class DonatorTests(TestCase):
             self.donator.getDonationAmount())
 
 
+    def test_addDonationUpdateTotalAdd(self):
+        """
+        Adding a donation will update the total.
+        """
+        self.donator.addDonation(Decimal('100.5'))
+        self.assertEqual(self.donator.totalAmount, Decimal('100.5'))
+        self.donator.addDonation(Decimal('50'))
+        self.assertEqual(self.donator.totalAmount, Decimal('150.5'))
+
+
+    def test_addDonationUpdateTotalDelete(self):
+        """
+        Deleting a donation from the store will update the total.
+        """
+        d = self.donator.addDonation(Decimal('100.5'))
+        self.assertEqual(self.donator.totalAmount, Decimal('100.5'))
+        d.deleteFromStore()
+        self.assertEqual(self.donator.totalAmount, Decimal('0'))
+
+
 
 class DonationTests(TestCase):
     def test_installOnReference(self):
