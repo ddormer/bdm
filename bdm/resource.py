@@ -3,7 +3,6 @@ import json
 from twisted.internet.defer import maybeDeferred, gatherResults
 from twisted.internet import reactor
 from twisted.internet.threads import deferToThreadPool
-from twisted.python.threadpool import ThreadPool
 from twisted.web import http
 from twisted.web.client import getPage
 from twisted.web.resource import Resource, NoResource
@@ -90,9 +89,9 @@ def jsonResult(f):
 
 from twisted.web.static import File
 class RootResource(Resource):
-    def __init__(self, store, steamKey):
+    def __init__(self, store, steamKey, threadPool):
         Resource.__init__(self)
-        self.putChild("api", DonationAPI(store, steamKey))
+        self.putChild("api", DonationAPI(store, steamKey, threadPool))
         self.putChild("paypal", PayPal(store))
         self.putChild("static", File('bdm/static/'))
         self.putChild("", File('bdm/static/html/index.html'))
@@ -171,11 +170,10 @@ class PayPal(Resource):
 class DonationAPI(Resource):
     isLeaf = True
 
-    def __init__(self, store, steamKey):
+    def __init__(self, store, steamKey, threadPool):
         self.store = store
         self.steamKey = steamKey
-        self.threadPool = ThreadPool()
-        self.threadPool.start()
+        self.threadPool = threadPool
         Resource.__init__(self)
 
 
