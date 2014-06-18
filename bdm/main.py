@@ -22,7 +22,7 @@ class Donator(Item):
 
 
     def getDonationAmount(self):
-        return sum(donation.amount for donation in self.donations)
+        return Decimal(sum(donation.amount for donation in self.donations))
 
 
     def addDonation(self, amount):
