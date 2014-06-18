@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 
 from twisted.internet.defer import maybeDeferred, gatherResults
 from twisted.internet import reactor
@@ -10,7 +11,7 @@ from twisted.web.server import NOT_DONE_YET
 
 from axiom.errors import ItemNotFound
 
-from bdm.main import Donation, Donator, donationToDict
+from bdm.main import Donation, Donator, donationToDict, donatorToDict
 from bdm.error import BloodyError, PaypalError
 from bdm.constants import CODE
 
@@ -247,7 +248,7 @@ class DonationAPI(Resource):
     @jsonResult
     def render_GET(self, request):
         if not request.postpath:
-            return "maybe sam dox"
+            return "nope"
 
         name = request.postpath[0]
         if name == u'steamid':
@@ -291,7 +292,31 @@ class DonationAPI(Resource):
 
     def getTop(self, limit):
         """
+        Retrieves a list of donators sorted by total donation amount.
         """
+        def _cb(info, donators):
+            players = []
+            for donator in donators:
+                steamid = donator['steamID']
+                if steamid == 'Anonymous':
+                    players.append(dict(
+                        {'steamid': steamid, 'personaname': 'Anonymous'},
+                        **donator))
+                else:
+                    players.append(dict(donator, **info[donator['steamID']]))
+            return players
+
+        donators = []
+        steamIDs = []
+        for d in self.store.query(Donator,
+                                  sort=Donator.totalAmount.desc,
+                                  limit=limit):
+            steamIDs.append(d.steamID)
+            donators.append(donatorToDict(d))
+
+        d = self.getPlayerSummaries(steamIDs)
+        d.addCallback(_cb, donators)
+        return d
 
 
     def serverStats(self, servers, querier=ServerQuerier):
