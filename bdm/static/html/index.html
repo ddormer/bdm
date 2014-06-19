@@ -44,19 +44,19 @@
                         </div>
                     </div>
 
-                    <form class="pure-form pure-form-stacked pure-u-11-24" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <form class="pure-form pure-form-stacked pure-u-11-24" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" id="paypalForm">
                         <fieldset>
                             <legend>Donate with PayPal!</legend>
                             <label for="paypal-amount">Amount (USD)<label>
                             <input id="paypal-amount" name="amount" placeholder="50">
 
                             <label for="option-one" class="pure-radio">
-                                <input id="option-one" type="radio" name="optionsRadios" value="option1" checked>
+                                <input id="option-one" type="radio" name="optionsRadios" value="single" checked>
                                 Once-off Donation
                             </label>
 
                             <label for="option-two" class="pure-radio">
-                                <input id="option-two" type="radio" name="optionsRadios" value="option2" checked>
+                                <input id="option-two" type="radio" name="optionsRadios" value="monthly" checked>
                                 Monthly Subscription
                             </label>
                         </fieldset>
@@ -71,9 +71,14 @@
                         </label>
 
                         <fieldset>
-                            <input type="button" name="submit" alt="PayPal - The safer, easier way to pay online!" class="pure-button pure-button-primary" value="Donate">
+                            <input type="submit" name="submit" alt="PayPal - The safer, easier way to pay online!" class="pure-button pure-button-primary" value="Donate">
                         </fieldset>
 
+                        <input type="hidden" name="custom">
+                        <input type="hidden" name="a3" value="0">
+                        <input type="hidden" name="p3" value="1">
+                        <input type="hidden" name="src" value="1">
+                        <input type="hidden" name="t3" value="M">
                         <input type="hidden" name="item_name" value="Tempus Network Donation">
                         <input type="hidden" name="cmd" value="_donations">
                         <input type="hidden" name="business" value="WABA95A5Z3H4W">
@@ -101,6 +106,34 @@
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+        $(document).ready(function () {
+            function setCustomInput() {
+                var o = {"steamid": $('input[name="steamid"]', 'form').val(),
+                         "anonymous": $('#agree', '#paypalForm').is(':checked')};
+                //$('input[name=optionsRadios]:checked', 'form').val()
+                $('input:hidden[name="custom"]', 'form').val(window.btoa(JSON.stringify(o)));
+            }
+
+            $('#paypalForm').submit(function () {
+                setCustomInput();
+
+                var donationType = $('input[name=optionsRadios]:checked', '#paypalForm').val();
+                if (donationType === 'monthly') {
+                    $('input:hidden[name="cmd"]', '#paypalform').val('_xclick-subscriptions');
+                }
+                else if (donationType === 'single') {
+                    $('input:hidden[name="cmd"]', '#paypalForm').val('_donations');
+                }
+
+                // Set a3 to amount. a3 is the amonut field used for _xclick-subscriptions.
+                $('input:hidden[name="a3"]', '#paypalForm').val(
+                    $('input[name="amount"]', '#paypalForm').val());
+                return true;
+            });
+        })
+        </script>
+
 
 
         <script type="text/jsx">
