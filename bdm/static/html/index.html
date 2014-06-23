@@ -11,14 +11,10 @@
     <body>
         <div id="hero-container" class="pure-g-r">
             <div id="hero-title" class="pure-u-1">
-                The Tempus Network
             </div>
-
-
             <div class="or-spacer">
               <div class="mask"></div>
             </div>
-
         </div>
 
         <div id="container" class="pure-g-r">
@@ -87,26 +83,27 @@
                     <div class="pure-u-1-5">
                     </div>
                     <div id="server-status-container" class="pure-u-3-5">
-                        <div class="server-status server-up">
-                            <span class="server-name">AusSurf Skill US [66Tick - Tricks - FastDL]</span>
-                            <img class="server-location" src="http://placehold.it/50x50"></img>
-                            <span class="server-players">10/30</span>
-                        </div>
-                        <div class="server-status server-down">
-                            <span class="server-name">server 2, Down.</span>
-                            <img class="server-location" src="http://placehold.it/50x50"></img>
-                            <span class="server-players">10/30</span>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
+<<<<<<< master
+=======
+
+>>>>>>> local
 
 
         <script type="text/jsx">
             /** @jsx React.DOM */
-
-
+            var ServerStatus = React.createClass({
+                render: function () {
+                    return (
+                    <div>
+                    <ServerList servers={servers} url="api/servers" pollInterval={20}/>
+                    </div>
+                    )
+                }
+            });
 
             var Server = React.createClass({
                 render: function() {
@@ -115,11 +112,20 @@
                     if (this.props.server.online) {
                         return (
                         <div className="server-status server-up">
-                            <span className="server-name">{this.props.server.server_name}</span>
-                            <img className="server-location" src={flag}></img>
-                            <span className="server-players">{this.props.server.player_count}/{this.props.server.max_players}</span>
+                            <span className="server-players">
+                                <span className="server-players-text">
+                                    {this.props.server.player_count}/{this.props.server.max_players}
+                                </span>
+                            </span>
+                            <span className="server-name">
+                                <span className="server-name-text">
+                                    {this.props.server.server_name}
+                                </span>
+                            </span>
+                            <img className="server-location" src={flag} height="40" width="57"></img>
                         </div>)
-                    } else {
+                    }
+                    else {
                         return (
                         <div className="server-status server-down">
                             <span className="server-name">{this.props.server.server_name}</span>
@@ -160,7 +166,9 @@
                 },
                 componentWillMount: function() {
                     this.loadDonationsFromServer();
-                    setInterval(this.loadDonationsFromServer, this.props.pollInterval);
+                    if (this.props.pollInterval > 0) {
+                        setInterval(this.loadDonationsFromServer, this.props.pollInterval * 1000);
+                    }
                 },
 
             });
@@ -185,9 +193,12 @@
 
             var Donation = React.createClass({
                 render: function() {
+                    if (!this.props.avatar) {
+                        this.props.avatar = 'static/images/default_avatar.png';
+                    }
                     return (
                         <div className="donation">
-                            <img className="steam-avatar" src={this.props.avatar}/>
+                            <img className="steam-avatar" src={this.props.avatar} height="34" width="34"/>
                             <div className="donator-name">
                                 {this.props.donator}
                             </div>
@@ -217,7 +228,9 @@
                 },
                 componentWillMount: function() {
                     this.loadDonationsFromServer();
-                    setInterval(this.loadDonationsFromServer, this.props.pollInterval);
+                    if (this.props.pollInterval > 0) {
+                        setInterval(this.loadDonationsFromServer, this.props.pollInterval * 1000);
+                    }
                 },
 
                 render: function () {
@@ -232,34 +245,55 @@
                 render: function () {
                     return (
                     <div>
-                    <DonationBox title="Top Total" url="api/top" pollInterval={20000}/>
-                    <DonationBox title="Latest" url="api/recent" pollInterval={20000}/>
+                    <DonationBox title="Leaderboard" url="api/top" pollInterval={0}/>
+                    <DonationBox title="Recent" url="api/recent" pollInterval={0}/>
                     </div>
                     )
                 }
             });
 
-            var servers = [["41.86.100.101", 27015, "ZA"]];
+         var servers = [
+            ['27.50.72.82', 27020, 'AU'],
+            ['74.91.122.222', 27015, 'US'],
+            ['5.135.153.162', 27055, 'EU'],
 
-
-            var ServerStatus = React.createClass({
-                render: function () {
-                    return (
-                    <div>
-                    <ServerList servers={servers} url="api/servers" pollInterval={20000}/>
-                    </div>
-                    )
-                }
-            });
+            ['173.199.80.140', 27015, 'AU'],
+            ['8.6.74.53', 27015, 'US'],
+            ['41.86.100.101', 27015, 'ZA']]
 
             React.renderComponent(
                 <DonationContainer/>,
-                document.getElementById('donation-container')
-            );
+                document.getElementById('donation-container'));
             React.renderComponent(
                 <ServerStatus/>,
-                document.getElementById('server-status-container')
-            );
+                document.getElementById('server-status-container'));
         </script>
     </body>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                function setCustomInput() {
+                    var o = {"steamid": $('input[name="steamid"]', 'form').val(),
+                             "anonymous": $('#agree', '#paypalForm').is(':checked')};
+                    //$('input[name=optionsRadios]:checked', 'form').val()
+                    $('input:hidden[name="custom"]', 'form').val(window.btoa(JSON.stringify(o)));
+                }
+
+                $('#paypalForm').submit(function () {
+                    setCustomInput();
+
+                    var donationType = $('input[name=optionsRadios]:checked', '#paypalForm').val();
+                    if (donationType === 'monthly') {
+                        $('input:hidden[name="cmd"]', '#paypalform').val('_xclick-subscriptions');
+                    }
+                    else if (donationType === 'single') {
+                        $('input:hidden[name="cmd"]', '#paypalForm').val('_donations');
+                    }
+
+                    // Set a3 to amount. a3 is the amonut field used for _xclick-subscriptions.
+                    $('input:hidden[name="a3"]', '#paypalForm').val(
+                        $('input[name="amount"]', '#paypalForm').val());
+                    return true;
+                });
+            })
+        </script>
 </html>

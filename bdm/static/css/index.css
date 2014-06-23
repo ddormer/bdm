@@ -1,6 +1,6 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700,900);
-@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
 @import url(http://fonts.googleapis.com/css?family=Abel);
+
 p {
   font-size: 12pt;
   line-height: 1.25;
@@ -11,19 +11,14 @@ p {
 }
 
 #hero-container {
-    height: 17em;
-    max-height: 300px;
+    height: 300px;
     margin-bottom: 30px;
-    background-color: lightblue;
+    background-color: #eeeeee;
+    background-image: url('../images/cover.png');
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-#hero-title {
-    color: black;
-    margin-top: 0.8em;
-    font-size: 5em;
-    text-align: center;
-    font-family: 'Abel', sans-serif;
-}
 
 #paypal-container {
     height: 350px;
@@ -63,30 +58,34 @@ form > fieldset > legend {
 }
 
 .donation-list-title {
+    font-variant: small-caps;
     font-size: 26px;
     text-align: center;
     color: black;
+    padding-bottom: 15px;
+    text-decoration: underline;
 }
 
 .donation-list {
     max-height: 350px;
     height: 185px;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 80px;
     /*border: 1px solid black; */
     /*background-color: #383838; */
 }
 
 .donation {
+    font-family: 'Abel', sans-serif;
     width: 100%;
     /*background-color: #2B2B2B;*/
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid grey;
     padding-bottom: 1px;
     margin-bottom: 1px;
-    height: 34px;
+    height: 35px;
 }
 
-.donation-list > .donation:nth-child(2n+2) {
+.donation-list > .donation:nth-child(2n+1) {
     background-color: #EEEEEE;
 }
 
@@ -103,7 +102,8 @@ form > fieldset > legend {
 
 .steam-avatar {
     float: left;
-    border: 1px solid;
+    border: 1px #1da7ef solid;
+    height: 34px;
 }
 
 .donator-name, .donation-amount {
@@ -111,6 +111,10 @@ form > fieldset > legend {
 }
 
 .donator-name {
+    text-overflow: ellipsis;
+    width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
     float:left;
     font-size: 20px;
     margin-left: 10px;
@@ -132,43 +136,64 @@ form > fieldset > legend {
     background-color: red;
 }
 
-.server-up {
-    background-color: #58FA58;
+.server-up > .server-name {
+    background-color: #52ba2d;
 }
 
 .server-status {
+    font-family: 'Abel', sans-serif;
+    font-size: 18px;
     height: 50px;
-    width: 340px;
+    width: 380px;
     margin-bottom: 5px;
     -webkit-transform-style: preserve-3d;
 }
 
 .server-name {
+    float:left;
+    width: 240px;
+    height: 50px;
+    padding-left: 10px;
+    -webkit-box-shadow: -2px 1px 2px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    -2px 1px 2px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:         -2px 1px 2px 0px rgba(50, 50, 50, 0.75);
+}
+
+.server-name-text {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
     float:left;
-    width: 200px;
-    padding-left: 10px;
 }
 
-.server-players {
+.server-players-text {
+    font-size: 16px;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
     float: right;
-    padding-right: 3%;
+    padding-right: 10px;
+}
+
+.server-players {
+    font-weight: bold;
+    float: left;
+    width: 50px;
+    margin-top: 5px;
+    padding-left: 10px;
+    background-color: #DDFF00;
+    height: 40px;
 }
 
 .server-location {
-    float: right;
-    width: 75px;
+    margin-top: 5px;
+    float: left;
+    opacity: 0.4;
 }
 
 
-
 .or-spacer {
-    margin-top:86px;
+    margin-top:263px;
     width:100%;
     position:relative;
 }

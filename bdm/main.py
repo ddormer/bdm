@@ -13,7 +13,7 @@ from bdm.ibdm import IDonator, IDonation
 class Donator(Item):
     implements(IDonator)
 
-    steamID = text(allowNone=True, default=u'Anonymous')
+    steamID = text(allowNone=True, default=u'Anonymous', doc=u'64-bit SteamID')
     totalAmount = point2decimal(allowNone=False, default=Decimal('0'))
 
     @property

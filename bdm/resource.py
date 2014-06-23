@@ -16,6 +16,13 @@ from bdm.error import BloodyError, PaypalError
 from bdm.constants import CODE
 
 from valve.source.a2s import ServerQuerier, NoResponseError
+from valve.steam.id import SteamID as ValveSteamID
+
+
+
+def steamidTo64(steamid):
+    return ValveSteamID.from_text(steamid).as_64()
+
 
 
 def _writeJSONResponse(result, request, code=CODE.SUCCESS, status=http.OK):
@@ -65,11 +72,12 @@ def _writeJSONErrorResponse(f, request):
     @type request: L{twisted.web.server.Request}
     """
     code = getattr(f.value, 'code', CODE.UNKNOWN)
-    return _writeJSONResponse(
+    _writeJSONResponse(
         result=f.getErrorMessage().decode('ascii'),
         request=request,
         code=code,
         status=_mapErrorCodeToStatus(code))
+    raise f
 
 
 
@@ -140,7 +148,8 @@ class PayPal(Resource):
         amount = data.get('settle_amount', [data['mc_gross']])[0]
 
         if paymentStatus == 'completed':
-            donator = self.store.findOrCreate(Donator, steamID=steamID)
+            donator = self.store.findOrCreate(
+                Donator, steamID=steamidTo64(steamID))
             donator.addDonation(amount, txn_id=txn_id, ipn_id=ipn_id)
 
         if paymentStatus == 'refunded':
@@ -160,6 +169,7 @@ class PayPal(Resource):
         """
         Recieve PayPal callback.
         """
+        print "Paypal callback received:"
         print request.args
 
         d = self.verify(request)
