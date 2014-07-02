@@ -179,7 +179,7 @@
                         return <Server server={server}></Server>
                     });
                     if (serverNodes.length == 0) {
-                        return (<Throbber />)
+                        return <Throbber />
                     }
                     return <div>{serverNodes}</div>
                 }
@@ -191,7 +191,14 @@
                         return <Donation key={donation.date} donator={donation.personaname} amount={donation.amount} avatar={donation.avatar}></Donation>;
                     });
                     if (donationNodes.length == 0) {
-                        return (<Throbber />)
+                        return (
+                            <div className="donation-list">
+                                <div className="donation-list-title">
+                                <span className="fa fa-trophy donation-list-icon"></span>
+                                {this.props.title}
+                                </div>
+                                <Throbber />
+                            </div>)
                     }
                     return (
                         <div className="donation-list">

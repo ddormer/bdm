@@ -75,6 +75,11 @@ form > fieldset > legend {
     /*background-color: #383838; */
 }
 
+.donation-list > .throbber {
+    display: block;
+    margin: auto;
+}
+
 .donation {
     font-family: 'Abel', sans-serif;
     width: 100%;
@@ -130,6 +135,10 @@ form > fieldset > legend {
 
 #server-status-container {
     margin-top: 30px;
+}
+#server-status-container > .throbber {
+    display: block;
+    margin: auto;
 }
 
 .server-down {
