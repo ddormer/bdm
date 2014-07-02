@@ -94,6 +94,14 @@
         </div>
         <script type="text/jsx">
             /** @jsx React.DOM */
+
+            var Throbber = React.createClass({
+                render: function () {
+                    return <img className="throbber" src="https://fbstatic-a.akamaihd.net/rsrc.php/v2/y-/r/viFl6A6lSzX.gif"/>
+                }
+            });
+
+
             var ServerStatus = React.createClass({
                 render: function () {
                     return (
@@ -135,41 +143,46 @@
             });
 
             var ServerList = React.createClass({
-                render: function() {
-                    var serverNodes = this.state.data.map(function (server) {
-                        return <Server server={server}></Server>
-                    });
-                    return (
-                    <div>
-                        {serverNodes}
-                    </div>);
-                },
-
                 getInitialState: function() {
                     return {data: []};
                 },
-                loadDonationsFromServer: function() {
+
+                dataReceived: function(data) {
+                    this.setState({data: data.result});
+                },
+
+                serverError: function(xhr, status, err) {
+                    console.error(this.props.url, status, xhr);
+                },
+
+                queryServer: function() {
                     $.ajax({
                         data: JSON.stringify(this.props.servers),
                         type: 'POST',
                         url: this.props.url,
                         dataType: 'json',
-                        success: function(data) {
-                            this.setState({data: data.result});
-                        }.bind(this),
-                        error: function(xhr, status, err) {
-                            console.error(this.props.url, status, xhr);
-                        }.bind(this)
+                        success: this.dataReceived,
+                        error: this.serverError
                     });
                     console.log(this.props.servers);
                 },
+
                 componentWillMount: function() {
-                    this.loadDonationsFromServer();
+                    this.queryServer();
                     if (this.props.pollInterval > 0) {
-                        setInterval(this.loadDonationsFromServer, this.props.pollInterval * 1000);
+                        setInterval(this.queryServer, this.props.pollInterval * 1000);
                     }
                 },
 
+                render: function() {
+                    var serverNodes = this.state.data.map(function (server) {
+                        return <Server server={server}></Server>
+                    });
+                    if (serverNodes.length == 0) {
+                        return (<Throbber />)
+                    }
+                    return <div>{serverNodes}</div>
+                }
             });
 
             var DonationList = React.createClass({
@@ -177,7 +190,9 @@
                     var donationNodes = this.props.data.map(function (donation) {
                         return <Donation key={donation.date} donator={donation.personaname} amount={donation.amount} avatar={donation.avatar}></Donation>;
                     });
-
+                    if (donationNodes.length == 0) {
+                        return (<Throbber />)
+                    }
                     return (
                         <div className="donation-list">
                             <div className="donation-list-title">
@@ -266,6 +281,7 @@
             React.renderComponent(
                 <ServerStatus/>,
                 document.getElementById('server-status-container'));
+
         </script>
     </body>
         <script type="text/javascript">
