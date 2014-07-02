@@ -11,6 +11,8 @@ p {
 }
 
 #hero-container {
+    width: 100%;
+    position: relative;
     height: 300px;
     margin-bottom: 30px;
     background-color: #eeeeee;
@@ -18,7 +20,6 @@ p {
     background-repeat: no-repeat;
     background-position: center;
 }
-
 
 #paypal-container {
     height: 350px;
@@ -155,7 +156,6 @@ form > fieldset > legend {
     height: 50px;
     width: 380px;
     margin-bottom: 5px;
-    -webkit-transform-style: preserve-3d;
 }
 
 .server-name {
@@ -172,6 +172,7 @@ form > fieldset > legend {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
     float:left;
 }
 
@@ -180,6 +181,7 @@ form > fieldset > legend {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
     float: right;
     padding-right: 10px;
 }
@@ -202,9 +204,10 @@ form > fieldset > legend {
 
 
 .or-spacer {
-    margin-top:263px;
     width:100%;
-    position:relative;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }
 .or-spacer .mask {
     overflow:hidden;
