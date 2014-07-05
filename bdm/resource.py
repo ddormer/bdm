@@ -12,7 +12,7 @@ from twisted.web.server import NOT_DONE_YET
 from twisted.python import log
 
 from axiom.errors import ItemNotFound
-from axiom.attributes import AND
+from axiom.attributes import AND, OR
 
 from bdm.donate import Donation, Donator, donationToDict, donatorToDict
 from bdm.error import BloodyError, PaypalError
@@ -225,12 +225,13 @@ class DonationAPI(Resource):
         donations = []
         steamids = set()
         for donation in self.store.query(Donation,
+                                         AND(Donation.donator == Donator.storeID,
+                                             Donator.anonymous == False,
+                                             Donator.steamID != None),
                                          limit=limit,
                                          sort=Donation.date.descending):
-            if (donation.donator.anonymous == False
-                and donation.donator.steamID != None):
-                    steamids.add(donation.donator.steamID)
-                    donations.append(donation)
+            steamids.add(donation.donator.steamID)
+            donations.append(donation)
 
         d = self.getPlayerSummaries(steamids)
         d.addCallback(_cb, donations)
