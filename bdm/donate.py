@@ -58,8 +58,9 @@ class Donation(Item):
         """
         Recalculate total donation amount when donation is deleted
         """
+        donator = self.donator
         super(Donation, self).deleteFromStore(deleteObject=deleteObject)
-        self.donator.calculateTotal()
+        donator.calculateTotal()
 
 
 
