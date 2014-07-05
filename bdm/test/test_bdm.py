@@ -5,12 +5,12 @@ from twisted.trial.unittest import TestCase
 from axiom.store import Store
 
 from bdm.ibdm import IDonation
-from bdm.main import Donator, Donation
+from bdm.donate import Donator, Donation
 
 
 class DonatorTests(TestCase):
     """
-    Tests for L{bdm.main.Donator}
+    Tests for L{bdm.donate.Donator}
     """
     def setUp(self):
         self.store = Store()

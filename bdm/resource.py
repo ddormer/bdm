@@ -10,9 +10,11 @@ from twisted.web.client import getPage
 from twisted.web.resource import Resource, NoResource
 from twisted.web.server import NOT_DONE_YET
 from twisted.python import log
-from axiom.errors import ItemNotFound
 
-from bdm.main import Donation, Donator, donationToDict, donatorToDict
+from axiom.errors import ItemNotFound
+from axiom.attributes import AND
+
+from bdm.donate import Donation, Donator, donationToDict, donatorToDict
 from bdm.error import BloodyError, PaypalError
 from bdm.constants import CODE
 
@@ -149,9 +151,8 @@ class PayPal(Resource):
         custom = json.loads(b64decode(data['custom'][0]))
 
         steamID = custom['steamid']
-        if not steamID:
-            steamID = u'Anonymous'
-        else:
+        anonymous = custom['anonymous']
+        if steamID:
             steamID = unicode(steamidTo64(steamID))
 
         txn_id = data['txn_id'][0]
@@ -159,7 +160,7 @@ class PayPal(Resource):
 
         if paymentStatus == 'completed':
             donator = self.store.findOrCreate(
-                Donator, steamID=steamID)
+                Donator, steamID=steamID, anonymous=anonymous)
             donator.addDonation(Decimal(amount), unicode(txn_id))
 
         if paymentStatus == 'refunded':
@@ -206,34 +207,33 @@ class DonationAPI(Resource):
         """
         Retrieve a list of recent donations.
 
-        XXX: This entire method is slow and terrible.
+        @param limit: The amount of donations to return.
+        @type limit: L{int}
+
+        @return: A list of donations.
+        @rtype: L{list} of L{dict}s.
         """
-        def _cb(players):
+        def _cb(players, donations):
             donators = []
             for donation in donations:
-                steamid = donation.donator.steamID
-                try:
-                    player = players[donation.donator.steamID].copy()
-                except KeyError:
-                    player = {
-                        'steamid': steamid,
-                        'personaname': 'Anonymous'}
-
+                player = players[donation.donator.steamID].copy()
                 player['date'] = donation.date.asPOSIXTimestamp()
                 player['amount'] = str(donation.amount)
                 donators.append(player)
             return donators
 
-
         donations = []
         steamids = set()
-        for donation in self.store.query(
-            Donation, limit=limit, sort=Donation.date.descending):
-            steamids.add(donation.donator.steamID)
-            donations.append(donation)
+        for donation in self.store.query(Donation,
+                                         limit=limit,
+                                         sort=Donation.date.descending):
+            if (donation.donator.anonymous == False
+                and donation.donator.steamID != None):
+                    steamids.add(donation.donator.steamID)
+                    donations.append(donation)
 
         d = self.getPlayerSummaries(steamids)
-        d.addCallback(_cb)
+        d.addCallback(_cb, donations)
         return d
 
 
@@ -321,18 +321,14 @@ class DonationAPI(Resource):
         def _cb(info, donators):
             players = []
             for donator in donators:
-                steamid = donator['steamID']
-                if steamid == 'Anonymous':
-                    players.append(dict(
-                        {'steamid': steamid, 'personaname': 'Anonymous'},
-                        **donator))
-                else:
-                    players.append(dict(donator, **info[donator['steamID']]))
+                players.append(dict(donator, **info[donator['steamID']]))
             return players
 
         donators = []
         steamIDs = []
         for d in self.store.query(Donator,
+                                  AND(Donator.anonymous == False,
+                                      Donator.steamID != None),
                                   sort=Donator.totalAmount.desc,
                                   limit=limit):
             steamIDs.append(d.steamID)

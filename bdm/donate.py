@@ -5,7 +5,7 @@ from zope.interface import implements
 from epsilon.extime import Time
 
 from axiom.item import Item
-from axiom.attributes import text, point2decimal, timestamp, reference
+from axiom.attributes import text, point2decimal, timestamp, reference, boolean
 
 from bdm.ibdm import IDonator, IDonation
 
@@ -13,7 +13,8 @@ from bdm.ibdm import IDonator, IDonation
 class Donator(Item):
     implements(IDonator)
 
-    steamID = text(allowNone=True, default=u'Anonymous', doc=u'64-bit SteamID')
+    steamID = text(allowNone=True, doc=u'64-bit SteamID')
+    anonymous = boolean(allowNone=False, doc=u'Display the user publicly?')
     totalAmount = point2decimal(allowNone=False, default=Decimal('0'))
 
     @property
