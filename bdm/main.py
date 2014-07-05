@@ -25,8 +25,8 @@ class Donator(Item):
         return Decimal(sum(donation.amount for donation in self.donations))
 
 
-    def addDonation(self, amount):
-        donation = Donation(store=self.store, amount=amount)
+    def addDonation(self, amount, paypalID):
+        donation = Donation(store=self.store, amount=amount, paypalID=paypalID)
         donation.installOn(self)
         return donation
 
@@ -44,6 +44,7 @@ class Donation(Item):
 
     amount = point2decimal(allowNone=False, default=Decimal('0'))
     date = timestamp(defaultFactory=lambda: Time(), indexed=True)
+    paypalID = text(allowNone=False)
     donator = reference()
 
     def installOn(self, donator):

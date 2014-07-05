@@ -1,5 +1,6 @@
 import json
 from decimal import Decimal
+from base64 import b64decode
 
 from twisted.internet.defer import maybeDeferred, gatherResults
 from twisted.internet import reactor
@@ -8,7 +9,7 @@ from twisted.web import http
 from twisted.web.client import getPage
 from twisted.web.resource import Resource, NoResource
 from twisted.web.server import NOT_DONE_YET
-
+from twisted.python import log
 from axiom.errors import ItemNotFound
 
 from bdm.main import Donation, Donator, donationToDict, donatorToDict
@@ -119,7 +120,7 @@ class PayPal(Resource):
         """
         Verify PayPal IPN data.
         """
-        paypalURL = 'https://www.paypal.com/cgi-bin/webscr'
+        paypalURL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 
         def _cb(response):
             if response == 'INVALID':
@@ -127,7 +128,7 @@ class PayPal(Resource):
                     'IPN data invalid. txn_id: %s', (data['txn_id']))
 
             elif response == 'VERIFIED':
-                return None
+                return True
 
             else:
                 raise PaypalError('Unrecognized verification response: %s', (response,))
@@ -141,16 +142,22 @@ class PayPal(Resource):
 
 
     def process(self, data):
-        paymentStatus = data['payment_status'].lower()
-        steamID = data.get('custom', ['Anonymous'])[0]
+        paymentStatus = data['payment_status'][0].lower()
+        custom = json.loads(b64decode(data['custom'][0]))
+
+        steamID = custom['steamid']
+        if not steamID:
+            steamID = u'Anonymous'
+        else:
+            steamID = unicode(steamidTo64(steamID))
+
         txn_id = data['txn_id'][0]
-        ipn_id = data['ipn_track_id'][0]
-        amount = data.get('settle_amount', [data['mc_gross']])[0]
+        amount = data.get('settle_amount', data['mc_gross'])[0]
 
         if paymentStatus == 'completed':
             donator = self.store.findOrCreate(
-                Donator, steamID=steamidTo64(steamID))
-            donator.addDonation(amount, txn_id=txn_id, ipn_id=ipn_id)
+                Donator, steamID=steamID)
+            donator.addDonation(Decimal(amount), unicode(txn_id))
 
         if paymentStatus == 'refunded':
             donation = self.store.findUnique(
@@ -172,8 +179,12 @@ class PayPal(Resource):
         print "Paypal callback received:"
         print request.args
 
+        def processFailure(e):
+            log.err(e)
+
         d = self.verify(request)
-        d.addCallback(self.process, request.args)
+        d.addCallback(lambda ign: self.process(request.args))
+        d.addErrback(processFailure)
         return ''
 
 
