@@ -99,10 +99,10 @@ def jsonResult(f):
 
 from twisted.web.static import File
 class RootResource(Resource):
-    def __init__(self, store, steamKey, threadPool):
+    def __init__(self, store, steamKey, paypalSandbox, threadPool):
         Resource.__init__(self)
         self.putChild("api", DonationAPI(store, steamKey, threadPool))
-        self.putChild("paypal", PayPal(store))
+        self.putChild("paypal", PayPal(store, paypalSandbox))
         self.putChild("static", File('bdm/static/'))
         self.putChild("", File('bdm/static/html/index.html'))
 
@@ -111,9 +111,10 @@ class RootResource(Resource):
 class PayPal(Resource):
     isLeaf = True
 
-    def __init__(self, store):
-        self.store = store
+    def __init__(self, store, sandbox):
         Resource.__init__(self)
+        self.store = store
+        self.SANDBOX = sandbox
 
 
     def verify(self, request):
@@ -121,6 +122,8 @@ class PayPal(Resource):
         Verify PayPal IPN data.
         """
         paypalURL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+        if not self.SANDBOX:
+            paypalURL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 
         def _cb(response):
             if response == 'INVALID':
