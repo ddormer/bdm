@@ -9,10 +9,11 @@ from twisted.web import http
 from twisted.web.client import getPage
 from twisted.web.resource import Resource, NoResource
 from twisted.web.server import NOT_DONE_YET
+from twisted.web.static import File
 from twisted.python import log
 
 from axiom.errors import ItemNotFound
-from axiom.attributes import AND, OR
+from axiom.attributes import AND
 
 from bdm.donate import Donation, Donator, donationToDict, donatorToDict
 from bdm.error import BloodyError, PaypalError
@@ -99,7 +100,6 @@ def jsonResult(f):
     return _inner
 
 
-from twisted.web.static import File
 class RootResource(Resource):
     def __init__(self, store, steamKey, paypalSandbox, threadPool):
         Resource.__init__(self)
@@ -125,12 +125,12 @@ class PayPal(Resource):
         """
         paypalURL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
         if not self.SANDBOX:
-            paypalURL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+            paypalURL = 'https://www.paypal.com/cgi-bin/webscr'
 
         def _cb(response):
             if response == 'INVALID':
                 raise PaypalError(
-                    'IPN data invalid. txn_id: %s', (data['txn_id']))
+                    'IPN data invalid. data: %s', (data,))
 
             elif response == 'VERIFIED':
                 return True
@@ -146,49 +146,58 @@ class PayPal(Resource):
         return d
 
 
-    def process(self, data):
+    def _process(self, data):
         paymentStatus = data['payment_status'][0].lower()
+        method = getattr(self, '_payment_%s' % (paymentStatus,))
+        if method is not None:
+            method(data)
+        else:
+            log.err('Unknown payment status: %s' % (paymentStatus,))
+
+
+    def _payment_completed(self, data):
+        txn_id = data['txn_id'][0]
+        amount = data.get('settle_amount', data['mc_gross'])[0]
         custom = json.loads(b64decode(data['custom'][0]))
+        anonymous = custom['anonymous']
 
         steamID = custom['steamid']
-        anonymous = custom['anonymous']
         if steamID:
             steamID = unicode(steamidTo64(steamID))
 
-        txn_id = data['txn_id'][0]
-        amount = data.get('settle_amount', data['mc_gross'])[0]
+        donator = self.store.findOrCreate(
+            Donator, steamID=steamID, anonymous=anonymous)
+        donator.addDonation(Decimal(amount), unicode(txn_id))
 
-        if paymentStatus == 'completed':
-            donator = self.store.findOrCreate(
-                Donator, steamID=steamID, anonymous=anonymous)
-            donator.addDonation(Decimal(amount), unicode(txn_id))
 
-        if paymentStatus == 'refunded':
-            donation = self.store.findUnique(
-                Donation, txn_id=data['parent_txn_id'][0])
-            donation.deleteFromStore()
+    def _payment_refunded(self, data):
+        donation = self.store.query(
+            Donation, AND(Donation.paypalID == unicode(data['parent_txn_id'][0])))
+        donation.deleteFromStore()
 
-        if paymentStatus == 'canceled_reversal':
-            pass
 
-        if paymentStatus == 'reversed':
-            pass
+    def _payment_reversed(self, data):
+        donation = self.store.findUnique(
+            Donation, AND(Donation.paypalID == unicode(data['parent_txn_id'][0])))
+        donation.deleteFromStore()
 
+
+    def _payment_canceled_reversal(self, data):
+        #XXX: TODO if ithere is ever a reversal cancelled.
+        log.err("Reversal cancelled:")
+        log.err(data)
 
 
     def render_POST(self, request):
         """
-        Recieve PayPal callback.
+        Recieves and verifies PayPal callbacks.
         """
-        print "Paypal callback received:"
-        print request.args
-
-        def processFailure(e):
-            log.err(e)
+        log.msg("Paypal callback:")
+        log.msg(request.args)
 
         d = self.verify(request)
-        d.addCallback(lambda ign: self.process(request.args))
-        d.addErrback(processFailure)
+        d.addCallback(lambda ign: self._process(request.args))
+        d.addErrback(log.err)
         return ''
 
 
