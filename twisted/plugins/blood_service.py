@@ -18,6 +18,9 @@ class Options(usage.Options):
         ['dbdir', 'd', 'blood.axiom', 'Database directory'],
         ['port', 'p', 'tcp:8090', 'Service strport description']]
 
+    optFlags = [
+        ['paypal-sandbox', None, 'Use sandbox URL for IPN.']]
+
 
 
 class BloodDonationMachineServiceMaker(object):
@@ -34,6 +37,7 @@ class BloodDonationMachineServiceMaker(object):
             RootResource(
                 store=Store(options['dbdir']),
                 steamKey=options['steamkey'],
+                paypalSandbox=options['paypal-sandbox'],
                 threadPool=tps.threadpool))
         strports.service(options['port'], site).setServiceParent(s)
         return s
