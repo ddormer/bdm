@@ -1,0 +1,23 @@
+{
+  "name": "bdm",
+  "version": "0.0.0",
+  "homepage": "https://github.com/ddormer/bdm",
+  "authors": [
+    "ddormer <me@darren.io>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "react": "~0.11.1",
+    "fontawesome": "~4.1.0",
+    "pure": "~0.5.0"
+  }
+}
