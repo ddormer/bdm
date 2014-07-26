@@ -11,14 +11,31 @@ p {
 }
 
 #hero-container {
-    width: 100%;
+    display: block;
     position: relative;
-    height: 300px;
     margin-bottom: 30px;
-    background-color: #eeeeee;
-    background-image: url('../images/cover.png');
-    background-repeat: no-repeat;
+    background-color: #ededed;
+}
+
+
+#title-image-container {
+    max-height: 300px;
+    max-width: 900px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+#title-image {
+    display: block;
+    max-width: 900px;
+    max-height: 300px;
+    background-color: #ededed;
+	background-image: url(../images/cover.png);
+    background-size: contain;
+	background-repeat: no-repeat;
     background-position: center;
+    padding-top: 33.3333%
 }
 
 #paypal-container {
