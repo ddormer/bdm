@@ -32,7 +32,8 @@ module.exports = function(grunt) {
           files: {
             'fontawesome/css/': 'fontawesome/css/',
             'fontawesome/fonts/': 'fontawesome/fonts/',
-            'pure-min.css': 'pure/pure-min.css'
+            'pure/pure-min.css': 'pure/pure-min.css',
+            'pure/grids-responsive-min.css': 'pure/grids-responsive-min.css'
           }
       }
    }
