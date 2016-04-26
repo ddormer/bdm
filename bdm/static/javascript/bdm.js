@@ -167,7 +167,7 @@ var DonationContainer = React.createClass({
     render: function () {
         return React.DOM.div({}, [
             DonationBox({title:"Leaderboard", url:"api/top", pollInterval:0}),
-            DonationBox({title:"Recent", url:"api/recent", pollInterval:0})
+            DonationBox({title:"Latest", url:"api/recent", pollInterval:0})
         ]);
     }
 });

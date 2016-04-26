@@ -2,7 +2,7 @@
 @import url(https://fonts.googleapis.com/css?family=Abel);
 @font-face {
     font-family: "TF2 Professor";
-    src: url("/static/fonts/tf2professor.ttf");
+    src: url("../fonts/tf2professor.ttf");
 }
 
 p {
@@ -148,9 +148,10 @@ form > fieldset > legend {
 
 .donation-amount {
     float: right;
-    font-size: 18px;
-    color: #12E612;
     margin-right: 10px;
+    font-size: 2.4em;
+    font-family: "TF2 Professor";
+    color: black;
 }
 
 
