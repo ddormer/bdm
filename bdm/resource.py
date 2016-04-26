@@ -354,7 +354,7 @@ class DonationAPI(Resource):
             def _tx():
                 q = querier(server)
                 try:
-                    info = q.get_info()
+                    info = q.info()
                     return {'server_name': info['server_name'],
                             'map': info['map'],
                             'player_count': info['player_count'],
