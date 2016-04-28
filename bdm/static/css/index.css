@@ -132,21 +132,19 @@ form > fieldset > legend {
     height: 34px;
 }
 
-.donator-name, .donation-amount {
-    padding-top: 4px;
-}
-
 .donator-name {
     text-overflow: ellipsis;
     width: 60%;
     white-space: nowrap;
     overflow: hidden;
-    float:left;
-    font-size: 20px;
+    float: left;
     margin-left: 10px;
+    font-size: 2.4em;
+    font-family: "TF2 Professor";
 }
 
 .donation-amount {
+    padding-top: 4px;
     float: right;
     margin-right: 10px;
     font-size: 2.4em;
